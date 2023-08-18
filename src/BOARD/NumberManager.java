@@ -18,11 +18,11 @@ public class NumberManager{
     Number[] number;
     int[][] tileBoard;
 
-    public NumberManager(GamePanel gp){
+    public NumberManager(GamePanel gp, int maxBoardNum){
         this.gp = gp;
         number = new Number[100];
         tileBoard = new int[gp.boardWidth][gp.boardHeight];
-        loadBoard("/BOARDS/board0" + randomNumber(3) + ".txt");
+        loadBoard("/BOARDS/board0" + randomNumber(maxBoardNum) + ".txt");
         getNumber();
     }
      int randomNumber(int max){
