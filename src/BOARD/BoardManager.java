@@ -7,10 +7,7 @@ import java.awt.*;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -30,9 +27,9 @@ public class BoardManager extends MouseAdapter {
         this.gp = gp;
         number = new Number[100];
         int randomNum = randomNumber(maxBoardNum);
+        getNumber();
         tileBoard = new int[gp.boardWidth][gp.boardHeight];
         loadBoard("/BOARDS/board0" + randomNum + ".txt");
-        getNumber();
         createGameBoard(randomNum);
     }
      int randomNumber(int max){
@@ -121,14 +118,9 @@ public class BoardManager extends MouseAdapter {
 
     public void editBoard(int x, int y){
         try {
-            InputStream is = getClass().getResourceAsStream("/BOARDS/game.txt");
-            BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(is)));
+            String filepath = "/BOARDS/game.txt";
 
 
-
-
-
-            br.close();
         }catch(Exception e){
 
         }
@@ -192,13 +184,15 @@ public class BoardManager extends MouseAdapter {
             }
         }
     }
+
     @Override
     public void mousePressed(MouseEvent e) {
 
         int x = e.getX() / gp.tileSize;
         int y = e.getY() / gp.tileSize;
 
-        editBoard(x, y);
+        editBoard(x+1, y+1);
+        System.out.println(x + " "+ y);
 
     }
 
