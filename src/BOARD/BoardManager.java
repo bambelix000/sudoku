@@ -5,6 +5,8 @@ import MAIN.GamePanel;
 import javax.imageio.ImageIO;
 import java.awt.*;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.*;
@@ -16,11 +18,13 @@ import java.util.Random;
 
 import static javax.imageio.ImageIO.read;
 
-public class BoardManager extends MouseAdapter {
+public class BoardManager extends MouseAdapter implements KeyListener {
 
     GamePanel gp;
     Number[] number;
     int[][] tileBoard;
+    int selectedX = 10;
+    int selectedY = 10;
 
 
     public BoardManager(GamePanel gp, int maxBoardNum) {
@@ -34,7 +38,7 @@ public class BoardManager extends MouseAdapter {
     }
      int randomNumber(int max){
         Random rand = new Random();
-        int random = rand.nextInt(max);;
+        int random = rand.nextInt(max);
         return  random + 1;
     }
 
@@ -81,9 +85,6 @@ public class BoardManager extends MouseAdapter {
             number[10] = new Number();
             number[10].image = read(Objects.requireNonNull(getClass().getResourceAsStream("/NUMBERS/selected.png")));
 
-
-
-
             number[11] = new Number();
             number[11].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/NUMBERS/a1.png")));
 
@@ -116,72 +117,65 @@ public class BoardManager extends MouseAdapter {
         }
     }
 
-    public void editBoard(int x, int y){
-        try {
-            String filepath = "/BOARDS/game.txt";
 
 
-        }catch(Exception e){
-
-        }
-
-    }
     public void loadBoard(String filePath){
         try{
             InputStream is = getClass().getResourceAsStream(filePath);
             BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(is)));
 
-            int x = 0;
-            int y = 0;
 
-            while(x < 9 && y < 9){
-
+            for(int j=0; j<9; j++) {
                 String line = br.readLine();
-
-                while(x < 9){
+                for(int i = 0; i<9;i++){
                     String[] number = line.split(" ");
-
-                    int num = Integer.parseInt(number[x]);
-
-                    tileBoard[x] [y] = num;
-                    x++;
-                }
-                if(x == 9){
-                    x = 0;
-                    y++;
+                    int num = Integer.parseInt(number[i]);
+                    tileBoard[i] [j] = num;
                 }
             }
+
             br.close();
 
         }catch(Exception e){
-
+            System.out.println("connecting with file was not possible, check if you provided appropriate file path");
         }
     }
 
     public void drawNumber(Graphics2D g2){
-        int boardWidth = 0;
-        int boardHeight = 0;
 
-        while(boardHeight < gp.boardHeight && boardWidth < gp.boardWidth){
+        for(int y = 0; y<gp.boardHeight; y++){
+            for(int x = 0; x<gp.boardWidth; x++){
+                int num = tileBoard[x][y];
 
-            int num = tileBoard[boardWidth][boardHeight];
+                int boardX = x * gp.tileSize;
+                int boardY = y * gp.tileSize;
 
-            int boardX = boardWidth * gp.tileSize;
-            int boardY = boardHeight * gp.tileSize;
-
-            if(num == 1){
-                g2.drawImage(number[num].image, boardX + 25, boardY + 5 , gp.tileSize - 50, gp.tileSize - 10, null);
-            }else{
-                g2.drawImage(number[num].image, boardX + 7, boardY + 5, gp.tileSize - 15, gp.tileSize - 10, null);
+                if(num == 1){
+                  g2.drawImage(number[num].image, boardX + 25, boardY + 5 , gp.tileSize - 50, gp.tileSize - 10, null);
+              }else{
+                  g2.drawImage(number[num].image, boardX + 7, boardY + 5, gp.tileSize - 15, gp.tileSize - 10, null);
+              }
             }
+        }
+    }
 
+    void tileClicked(int x, int y){
 
-            boardWidth++;
+        if(tileBoard[x][y] == 0 || tileBoard[x][y] > 10){
+            tileBoard[selectedX][selectedY] = 0;
+            tileBoard[x][y] = 10;
+            selectedX = x;
+            selectedY = y;
 
-            if(boardWidth == gp.boardWidth){
-                boardWidth = 0;
-                boardHeight++;
-            }
+        }else if(tileBoard[x][y] == 10){
+            tileBoard[x][y] = 0;
+        }
+    }
+    void editBoard(int key){
+        if(key>=1 && key<=9){
+            tileBoard[selectedX][selectedY] = 10 + key;
+            selectedX = 10;
+            selectedY = 10;
         }
     }
 
@@ -191,11 +185,26 @@ public class BoardManager extends MouseAdapter {
         int x = e.getX() / gp.tileSize;
         int y = e.getY() / gp.tileSize;
 
-        editBoard(x+1, y+1);
-        System.out.println(x + " "+ y);
+        tileClicked(x, y);
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        int key = e.getKeyCode()-48;
+        editBoard(key);
+    }
+
+
+    @Override
+    public void keyTyped(KeyEvent e) {
 
     }
 
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
+    }
 
 
 }
