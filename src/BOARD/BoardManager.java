@@ -37,7 +37,6 @@ public class BoardManager extends MouseAdapter implements KeyListener {
         getNumber();
         tileBoard = new int[gp.boardWidth][gp.boardHeight];
         loadBoard("/BOARDS/board0" + randomNum + ".txt");
-        createGameBoard(randomNum);
     }
 
      int randomNumber(int max){
@@ -46,13 +45,7 @@ public class BoardManager extends MouseAdapter implements KeyListener {
         return  random + 1;
     }
 
-    public void createGameBoard(int num) {
-        try {
-            Files.copy(Path.of("res/BOARDS/board0" + num + ".txt"), Path.of("res/BOARDS/game.txt"), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+
 
     public void getNumber(){
         try{

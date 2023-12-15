@@ -17,7 +17,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
     Timer timer = new Timer(90, this);
 
-    BoardManager boardM = new BoardManager(this, 3);
+    BoardManager boardM = new BoardManager(this, 1);
 
     GamePanel(){
         this.setPreferredSize(new Dimension(boardWidth, boardHeight));
