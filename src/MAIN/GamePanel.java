@@ -32,6 +32,9 @@ public class GamePanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent ev){
         if(ev.getSource()==timer) {
             repaint();
+            if(boardM.howManyBlanks == 0){
+                System.out.println("you won");
+            }
         }
     }
 
@@ -39,7 +42,7 @@ public class GamePanel extends JPanel implements ActionListener {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
 
-        boardM.drawNumber(g2);
+        boardM.drawNumbers(g2);
 
     }
 

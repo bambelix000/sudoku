@@ -23,8 +23,11 @@ public class BoardManager extends MouseAdapter implements KeyListener {
     GamePanel gp;
     Number[] number;
     int[][] tileBoard;
+    int mistakes = 0;
     int selectedX = 10;
     int selectedY = 10;
+    public int howManyBlanks;
+
 
 
     public BoardManager(GamePanel gp, int maxBoardNum) {
@@ -36,6 +39,7 @@ public class BoardManager extends MouseAdapter implements KeyListener {
         loadBoard("/BOARDS/board0" + randomNum + ".txt");
         createGameBoard(randomNum);
     }
+
      int randomNumber(int max){
         Random rand = new Random();
         int random = rand.nextInt(max);
@@ -121,6 +125,7 @@ public class BoardManager extends MouseAdapter implements KeyListener {
 
     public void loadBoard(String filePath){
         try{
+            int tmp = 0;
             InputStream is = getClass().getResourceAsStream(filePath);
             BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(is)));
 
@@ -130,9 +135,14 @@ public class BoardManager extends MouseAdapter implements KeyListener {
                 for(int i = 0; i<9;i++){
                     String[] number = line.split(" ");
                     int num = Integer.parseInt(number[i]);
+                    if(num == 0 ){
+                        tmp++;
+                    }
                     tileBoard[i] [j] = num;
                 }
             }
+             howManyBlanks = tmp;
+            System.out.println(howManyBlanks);
 
             br.close();
 
@@ -141,7 +151,7 @@ public class BoardManager extends MouseAdapter implements KeyListener {
         }
     }
 
-    public void drawNumber(Graphics2D g2){
+    public void drawNumbers(Graphics2D g2){
 
         for(int y = 0; y<gp.boardHeight; y++){
             for(int x = 0; x<gp.boardWidth; x++){
@@ -150,7 +160,7 @@ public class BoardManager extends MouseAdapter implements KeyListener {
                 int boardX = x * gp.tileSize;
                 int boardY = y * gp.tileSize;
 
-                if(num == 1){
+                if(num == 1 || num ==11){
                   g2.drawImage(number[num].image, boardX + 25, boardY + 5 , gp.tileSize - 50, gp.tileSize - 10, null);
               }else{
                   g2.drawImage(number[num].image, boardX + 7, boardY + 5, gp.tileSize - 15, gp.tileSize - 10, null);
@@ -160,6 +170,10 @@ public class BoardManager extends MouseAdapter implements KeyListener {
     }
 
     void tileClicked(int x, int y){
+        if(tileBoard[x][y]>10){
+            howManyBlanks++;
+            System.out.println(howManyBlanks);
+        }
 
         if(tileBoard[x][y] == 0 || tileBoard[x][y] > 10){
             tileBoard[selectedX][selectedY] = 0;
@@ -169,11 +183,54 @@ public class BoardManager extends MouseAdapter implements KeyListener {
 
         }else if(tileBoard[x][y] == 10){
             tileBoard[x][y] = 0;
+            selectedX = 10;
+            selectedY = 10;
         }
+
+
     }
+    public boolean numCheck(int x, int y, int value){
+        //check if there is same number in col
+        if(x<10 && y <10) {
+            for (int i = 0; i < 9; i++) {
+                if (tileBoard[x][i] == value || tileBoard[x][i] == value + 10 && i != y) {
+                    System.out.println("problem z kolumn¹");
+                    return false;
+                }
+            }
+
+            //check if there is same number in row
+            for (int j = 0; j < 9; j++) {
+                if (tileBoard[j][y] == value || tileBoard[j][y] == value + 10 && j != x) {
+                    System.out.println("problem z rzêdem");
+                    return false;
+                }
+            }
+            //check if there is same number in 3x3
+            for (int g = 0; g < 9; g++) {
+                int row = 3 * (x / 3) + (g / 3);
+                int col = 3 * (y / 3) + (g % 3);
+
+                if (tileBoard[row][col] == value || tileBoard[row][col] == 10 + value && row != x && col != y) {
+                    System.out.println("problem z kratk¹");
+                    return false;
+                }
+            }
+            howManyBlanks--;
+            System.out.println(howManyBlanks);
+        }
+            return true;
+
+    }
+
+
     void editBoard(int key){
         if(key>=1 && key<=9){
             tileBoard[selectedX][selectedY] = 10 + key;
+            if(!numCheck(selectedX, selectedY, key)){
+                mistakes++;
+            }
+
             selectedX = 10;
             selectedY = 10;
         }
