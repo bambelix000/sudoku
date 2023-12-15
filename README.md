@@ -9,5 +9,7 @@ I'VE LEARNED:
 
 FUTURES:
 
-  - changing numbers
   - game algorithm
+  - optimalisation 
+  - better graphics
+    
